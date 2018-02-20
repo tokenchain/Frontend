@@ -1,4 +1,6 @@
 import { apiPut, apiGet, ApiError } from '../generic/apiCall';
+import { getUser } from '../demoData/ratings';
+import { generateHistory } from '../demoData/trades';
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const GET_PROFILE = 'GET_PROFILE';
 export const TRADES_FOR_USER = 'TRADES_FOR_USER';
@@ -8,9 +10,9 @@ export function updateProfile(profile) {
     const name = profile.name;
     delete profile.name;
     apiPut('/api/profile/' + name, null, profile)
-      .then(json => dispatch({
+      .then(() => dispatch({
         type: UPDATE_PROFILE,
-        profile: json,
+        profile: profile,
       }));
   };
 }
@@ -18,7 +20,8 @@ export function updateProfile(profile) {
 export function getProfile(name) {
   return dispatch => {
     apiGet(`/api/profile/${name}`)
-      .then(profile => {
+      .then(() => {
+        const profile = getUser(name);
         dispatch({
           type: GET_PROFILE,
           profile,
@@ -44,12 +47,22 @@ export function getProfile(name) {
 export function getTradesForUser(name) {
   return dispatch => {
     apiGet(`/api/tradesForUser/${name}`)
-      .then(trades => {
+      .then(() => {
+        let trades;
+        try {
+          trades = JSON.parse(window.localStorage.getItem(`history${name}`));
+          if(!trades) {
+            throw new Error();
+          }
+        } catch(e) {
+          trades = {asTrader: generateHistory(), asInvestor: []};
+          window.localStorage.setItem(`history${name}`, JSON.stringify(trades));
+        }
         dispatch({
           type: TRADES_FOR_USER,
           name,
           trades,
         });
       });
-  }
+  };
 }

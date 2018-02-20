@@ -8,8 +8,11 @@ function incoming(state = [], action) {
   switch(action.type) {
     case REJECT_OFFER:
       return state.filter(o => o._id !== action.offer._id);
-    case ACCEPT_OFFER:
-      return state.map(o => o._id === action.offer._id ? {...o, state: CONTRACT_STATE_ACCEPTED} : o);
+    case ACCEPT_OFFER: {
+      const offer = action.offer;
+      offer.startBalance = (offer.balance * 100000000);
+      return state.map(o => o._id === offer._id ? {...o, state: CONTRACT_STATE_ACCEPTED} : o);
+    }
     case UPDATE_DASHBOARD:
       return action.data.offers.incoming.filter(o =>
         o.state === CONTRACT_STATE_INIT ||

@@ -6,22 +6,26 @@ export const KEY_STATE_USED = 'USED';
 
 const generateKey = (state, owner, name) => {
   const exchange = getRandomExchange();
-  const currencies = exchange.currencies.map(curName => {
-    const enabled = currencyEnabled(curName);
-    return {name: curName, amount: getCurrencyValue(), enabled};
-  }).filter(Boolean);
+  const currencies = generateCurrencies(exchange);
   const keyValue = generateId(20);
   const key = {
     currencies, state, owner, name,
     exchange: exchange.name, key: keyValue,
     _id: generateId()
   };
-  console.log(key);
   return key;
 };
 
+export function generateCurrencies(exchange) {
+  return exchange.currencies.map(curName => {
+    const enabled = currencyEnabled(curName);
+    const totalBalance = parseFloat((Math.random() * 100 + 4).toFixed(8));
+    return {name: curName, enabled, totalBalance, availableBalance: parseFloat((totalBalance * Math.random()).toFixed(8))};
+  }).filter(Boolean);
+}
+
 const getCurrencyValue = () => {
-  return (Math.random() * 100).toFixed(2);
+  return (Math.random() * 100);
 };
 
 const currencyEnabled = (cur) => {

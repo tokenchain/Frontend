@@ -1,63 +1,103 @@
-import words from './words';
-import names from './names';
+import * as random from '../generic/random';
+import { generateFeedbacks, generateCurrencies } from './profile';
+
 export function generateRatings() {
-  let traders = [];
-  for(let i = 0; i < 25; i++) {
-    traders.push(generateTraderRating(i + 1));
+  const ratings = [];
+  for(let i = 0; i < 50; i++) {
+    const user = generateUser();
+    user.rank = i + 1;
+    ratings.push(user);
   }
-  let investors = [];
-  for(let i = 0; i < 25; i++) {
-    investors.push(generateInvestorRating(i + 1));
-  }
-  return {traders, investors};
+  return ratings;
 }
 
-function generateTraderRating(rank) {
-  const name = generateName();
-  const totalContracts = Math.floor(Math.random() * 30);
-  const successContracts = totalContracts - Math.floor(Math.random() * totalContracts);
-  const dateCreated = (new Date(Date.now() - Math.floor(Math.random() * 365 + 20) * 86400000)).toString();
-  const duration = Math.floor(Math.random() * 20 + 15);
-  // const roi = Math.floor(Math.random() * 30 - 15);
-  const rois = generateRoi();
-  const minAmount = Math.floor(Math.random() * 7 + 4);
-  const minAmountCurrency = 'BTC';
-  const acceptInvestments = generateAcceptInvestments()
-  const fee = Math.floor(Math.random() * 10 + 10);
-  const moneyInManagement = Math.floor(Math.random() * 30 + 10) + ' BTC';
-  const maxLoss = Math.floor(Math.random() * 10 + 10);
-  return {name, totalContracts, successContracts,
-    dateCreated, duration, minAmount, minAmountCurrency,
-    fee, moneyInManagement, maxLoss,
-    rois, name, rank, acceptInvestments};
+export function getRatings() {
+  try {
+    let ratings = JSON.parse(window.localStorage.getItem('demoRatings'));
+    if(Array.isArray(ratings)) {
+      return ratings;
+    } else {
+      throw new Error('should be array');
+    }
+  } catch(e) {
+    const ratings = generateRatings();
+    window.localStorage.setItem('demoRatings', JSON.stringify(ratings));
+    return ratings;
+  }
 }
-function generateInvestorRating(rank) {
-  const name = generateName();
-  const totalContracts = Math.floor(Math.random() * 30);
-  const rois = generateRoi();
-  const successContracts = totalContracts - Math.floor(Math.random() * totalContracts);
-  const dateCreated = (new Date(Date.now() - Math.floor(Math.random() * 365 + 20) * 86400000)).toString();
-  const paidExcessProfit = Math.floor(Math.random() * 30) + 10 + ' BTC';
-  const paidInvoices = Math.floor(Math.random() * 10) + 5;
+
+export function getUser(name) {
+  let ratings;
+  try {
+    ratings = JSON.parse(window.localStorage.getItem('demoRatings'));
+    if(!Array.isArray(ratings)) {
+      throw new Error('should be array');
+    }
+  } catch(e) {
+    ratings = generateRatings();
+    window.localStorage.setItem('demoRatings', JSON.stringify(ratings));
+  }
+  let user = ratings.find(u => u.name === name);
+  if(!user) {
+    user = generateUser(name);
+    const maxRank = ratings.reduce((maxRank, user) => Math.max(maxRank, user.rank), 1);
+    user.rank = maxRank + 1;
+    ratings.push(user);
+    window.localStorage.setItem('demoRatings', JSON.stringify(ratings));
+  }
+  if(user.feedbacks.length === 0) {
+    user.feedbacks = generateFeedbacks();
+    window.localStorage.setItem('demoRatings', JSON.stringify(ratings));
+  }
+  if(user.currencies.length === 0) {
+    user.currencies = generateCurrencies();
+    window.localStorage.setItem('demoRatings', JSON.stringify(ratings));
+  }
+  return user;
+}
+
+function generateUser(userName) {
+  const name = userName || random.getName();
+  const availableForOffers = random.getBoolean();
+  const fee = random.getInt(10, 25);
+  const roi = random.getInt(10, 20);
+  const dt = Date.now() - random.getInt(20, 200) * 86400000;
+  const minAmountCurrency = random.getMainCurrency();
+  const minAmount = getMinAmount(minAmountCurrency);
+  const feedbacks = [];
+  const inManagement = random.get(100, 10000);
+  const _id = random.getId();
+  const currencies = [];
+  const duration = random.getInt(20, 60);
+  const addr = random.getAddress();
+  const maxLoss = random.getInt(10, 30);
+  const roiInUSD = random.get(0, 40);
+  const roiInBTC = random.get(0, 40);
+  const totalContracts = random.getInt(1, 10);
+  const successContracts = random.getInt(0, totalContracts);
+  const paidExcessProfit = random.getInt(0, 1000);
+  const paidInvoices = random.getInt(1, 1000);
+  const rating = random.getInt(1, 5);
   return {
-    name, totalContracts, rois, successContracts, dateCreated, paidExcessProfit, paidInvoices, rank
+    _id, addr, name, dt,
+    feedbacks, currencies, inManagement,
+    availableForOffers, duration, minAmountCurrency, minAmount,
+    roi, maxLoss, fee, roiInUSD, roiInBTC,
+    totalContracts, successContracts,
+    paidExcessProfit, paidInvoices, rating,
+  };
+}
+
+function getMinAmount(currency) {
+  switch(currency) {
+    case 'BTC':
+      return random.getInt(1, 10);
+    case 'ETH':
+      return random.getInt(10, 200);
+    case 'USDT':
+      return random.getInt(500, 10000);
+    default:
+      throw Error('invalid min amount currency');
   }
 }
 
-function generateRoi() {
-  let rois = {}
-  let period = ['1 week', '1 month', '3 months', '6 months', '12 months', 'All time']
-  for(let i = 0; i < 6; i++) {
-    rois[period[i]] = Math.floor(Math.random() * 30 - 15)
-  }
-  return rois;
-}
-
-function generateAcceptInvestments() {
-  return Math.random() > .5 ? false : true
-}
-
-function generateName() {
-  return words[Math.floor(Math.random() * words.length)] + 
-    names[Math.floor(Math.random() * names.length)]; 
-}

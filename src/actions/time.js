@@ -6,7 +6,7 @@ export function fetchTime() {
     apiGet('/api/time', null, dispatch)
       .then(json => dispatch({
         type: GET_TIME,
-        time: json.time
+        time: Date.now(),
       }))
       .catch(err => console.log('catched eror', err));
   };

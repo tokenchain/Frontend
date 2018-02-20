@@ -4,7 +4,7 @@ import { Row, Col } from 'reactstrap';
 import { UncontrolledTooltip } from 'reactstrap';
 
 
-const Stats = ({ traderRating, investorRating, roiInUSD, roiInBTC, moneyInManagement, rates })  => (
+const Stats = ({ traderRating, investorRating, roiInUSD, roiInBTC, moneyInManagement, rates, rank })  => (
   <Row className="justify-content-between raiting-block">
     <Col xs="auto" className="raiting-left-item">
       <div className="content-fuild">
@@ -14,7 +14,7 @@ const Stats = ({ traderRating, investorRating, roiInUSD, roiInBTC, moneyInManage
               Rank in traders rating:
             </div>
             <div className="value-text">
-              <span className="number-value-text">#</span><span className="text-underline">{}<hr/></span>
+              <span className="number-value-text">#</span><span className="text-underline">{rank}<hr/></span>
             </div>
           </Col>
         </div>
@@ -24,7 +24,7 @@ const Stats = ({ traderRating, investorRating, roiInUSD, roiInBTC, moneyInManage
               return on investment (ROI):
             </div>
             <div className="value-text">
-              {roiInUSD}<span className="currency-value-usd-text letter-spacing-1"> % in usd</span>
+              {roiInUSD && roiInUSD.toFixed(0)}<span className="currency-value-usd-text letter-spacing-1"> % in usd</span>
 
               <span className="icon icon-help icon-help-web-button"  id="help-icon-roi"></span>
               <UncontrolledTooltip target="help-icon-roi">
@@ -33,7 +33,7 @@ const Stats = ({ traderRating, investorRating, roiInUSD, roiInBTC, moneyInManage
 
             </div>
             <div className="description-text btc-text">
-              ~ {roiInBTC} <span className="currency-value-btc-text letter-spacing-1"> % in btc</span>
+              ~ {roiInBTC && roiInBTC.toFixed(0)} <span className="currency-value-btc-text letter-spacing-1"> % in btc</span>
             </div>            
           </Col>
         </div>
@@ -47,7 +47,7 @@ const Stats = ({ traderRating, investorRating, roiInUSD, roiInBTC, moneyInManage
               Rank in investors rating:
             </div>
             <div className="value-text green">
-              <span className="number-value-text">#</span><span className="text-underline">{}<hr/></span>
+              <span className="number-value-text">#</span><span className="text-underline">{rank}<hr/></span>
             </div>
           </Col>
         </div>

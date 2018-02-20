@@ -1,5 +1,7 @@
 import { apiPut, apiDelete, apiPost, ApiError } from '../generic/apiCall';
 import { LOGGED_OUT } from '../actions/auth';
+import { getId } from '../generic/random';
+import { generateCurrencies } from '../demoData/apiKeys';
 export const DELETE_API_KEY = 'DELETE_API_KEY';
 export const ADD_API_KEY = 'ADD_API_KEY';
 export const UPDATE_API_KEY = 'UPDATE_API_KEY';
@@ -34,11 +36,18 @@ export function deleteApiKey(key) {
 
 export function addApiKey(key) {
   return dispatch => {
+    console.log(key);
     apiPost('/api/key', null, key)
-      .then(json => dispatch({
-        type: ADD_API_KEY,
-        apiKey: json,
-      }))
+      .then(json => {
+        console.log(key);
+        key._id = getId();
+        key.currencies = generateCurrencies();
+        console.log(key);
+        dispatch({
+          type: ADD_API_KEY,
+          apiKey: key,
+        });
+      })
       .catch(error => {
         if(error.apiErrorCode) {
           switch(error.apiErrorCode) {

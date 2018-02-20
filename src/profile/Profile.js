@@ -102,7 +102,6 @@ class Profile extends React.Component {
             own={own}
             profile={this.state.profile}
             onCurrencyToggle={this.onCurrencyToggle}
-            currencies={this.state.currencies}
           />
         </Row>
       </Container>

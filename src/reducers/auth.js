@@ -1,7 +1,17 @@
 import { LOGGED_IN, NAME_REQUIRED } from '../actions/auth';
 import { UPDATE_PROFILE, GET_PROFILE } from '../actions/profile';
+import { generateProfile } from '../demoData/profile';
 
-export default function reducer(auth = {}, action) {
+
+const getInitState = () => {
+  const profile = generateProfile('myprofile');
+  window.localStorage.setItem('profile/' + profile.name, JSON.stringify(profile));
+  return {
+    loggedIn: true,
+    profile,
+  };
+};
+export default function reducer(auth = getInitState(), action) {
   switch(action.type) {
     case LOGGED_IN: {
       const state = {loggedIn: true, profile: action.data};

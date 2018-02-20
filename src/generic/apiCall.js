@@ -42,16 +42,8 @@ function getSelectedNet() {
 }
 
 function jsonRequest(url, params) {
-  params.headers['X-Network'] = getSelectedNet();
-  return window.fetch(url, params).then(res => res.json())
-    .then(json => {
-      const error = json.error;
-      if(error) {
-        throw new ApiError(error);
-      } else {
-        return json;
-      }
-    });
+  console.log('performing request', url);
+  return Promise.resolve();
 }
 
 

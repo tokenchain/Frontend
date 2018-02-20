@@ -17,6 +17,7 @@ class CurrencySettings extends React.Component {
   }
 
   onCurrencyToggle(row) {
+    return;
     const preferred = !row.original.preferred;
     const update = {name: row.original.name, preferred};
     this.props.onCurrencyToggle(update);
@@ -69,7 +70,7 @@ class CurrencySettings extends React.Component {
                   </div>
                 </div>
                 <div className="card-body"  ref={element => this.divRef = element}>
-                  <div className="under_construction">Under construction</div>
+                  {this.renderTable()}
                 </div>
               </div>
             </Col>

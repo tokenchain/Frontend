@@ -1,6 +1,7 @@
 import { apiGet, apiPost, ApiError } from '../generic/apiCall';
 import { fetchDashboardData } from '../actions/dashboard';
 import { getMarketSummaries, getTicker, getOrderBook, getMarketHistory, getMarkets } from '../api/bittrex/bittrex';
+import { getRatings } from '../demoData/ratings';
 export const SELECT_API_KEY = 'SELECT_API_KEY';
 export const CANCEL_ORDER = 'CANCEL_ORDER';
 export const SELECT_MARKET = 'SELECT_MARKET';
@@ -25,9 +26,19 @@ export function getMyOrders(key) {
   return dispatch => {
     apiGet('/api/trades/' + key._id)
       .then(res => {
+        let orders;
+        try {
+          const json = JSON.parse(window.localStorage.getItem(`orders${key._id}`));
+          if(!json) {
+            throw new Error();
+          };
+        } catch(e) {
+          orders = {openTrades: [], closedTrades: []};
+          window.localStorage.setItem(`orders${key._id}`, JSON.stringify(orders));
+        }
         dispatch({
           type: GET_MY_ORDERS,
-          orders: res,
+          orders,
         });
       })
       .catch(error => console.log(error));
@@ -93,6 +104,7 @@ export function selectMarket(market) {
 
 
 export function placeOrder(order, type) {
+  console.log(order);
   return dispatch => {
     let url;
     switch(type) {
@@ -106,7 +118,19 @@ export function placeOrder(order, type) {
         alert('error');
     }
     apiPost(url, null, order)
-      .then(order => {
+      .then(() => {
+        console.log(order);
+        order = {
+          keyId: order.keyId,
+          market: order.market,
+          quantity: order.quantity,
+          rate: order.rate,
+          type,
+          dt: Date.now(),
+          filled: 0,
+          closed: false,
+          imported: false,
+        };
         alert('Order has been placed');
         dispatch({
           type: PLACE_ORDER,
@@ -168,7 +192,7 @@ export function updateRatings() {
       .then(ratings => {
         dispatch({
           type: UPDATE_RATINGS,
-          ratings,
+          ratings: getRatings(),
         });
       })
       .catch(e => console.log('error'));
@@ -204,7 +228,7 @@ export function updateOrderBook(market) {
         }
       })
       .catch(e =>  console.log('failed to update order book'));
-  }
+  };
 };
 
 export function updateHistory(market) {

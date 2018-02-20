@@ -2,7 +2,7 @@ import { generateKeys, KEY_STATE_USED } from './demoData/apiKeys';
 import { generateId, generateTraderName } from './demoData/util';
 import { generateOffer, getRandomState } from './demoData/offers';
 import { generateContract } from './demoData/contracts';
-import { generateProfile } from './demoData/profile';
+import { getUser } from './demoData/ratings';
 import { generateOrders } from './demoData/orders';
 import { generateHistory } from './demoData/history';
 
@@ -12,13 +12,13 @@ import { CONTRACT_STATE_VERIFIED, CONTRACT_STATE_HALTED, CONTRACT_STATE_FINISHED
 
 
 export default function generateData() {
-  const profile = generateProfile();
+  const profile = getUser('my_profile');
   const apiKeys = generateKeys(profile._id);
   const usedKeys = apiKeys.ownKeys.filter(k => k.state === KEY_STATE_USED);
 
   const outgoingOffers = [];
   for(let i = 0; i < usedKeys.length / 2; i++) {
-    const offer = generateOffer(usedKeys[i]._id, getRandomState(), 'me', generateTraderName());
+    const offer = generateOffer(usedKeys[i]._id, getRandomState(), profile.name, generateTraderName());
     outgoingOffers.push(offer);
   }
 
@@ -30,12 +30,12 @@ export default function generateData() {
 
   const incomingOffers = [];
   for(let i = 0; i < apiKeys.receivedKeys.length / 2; i++) {
-    const offer = generateOffer(apiKeys.receivedKeys[i]._id, getRandomState(), generateTraderName(), 'me');
+    const offer = generateOffer(apiKeys.receivedKeys[i]._id, getRandomState(), generateTraderName(), profile.name);
     incomingOffers.push(offer);
   }
   const myContracts = [];
   for(let i = apiKeys.receivedKeys.length / 2; i < apiKeys.receivedKeys.length; i++) {
-    const contract = generateContract(apiKeys.receivedKeys[i]._id, CONTRACT_STATE_VERIFIED, 'me');;
+    const contract = generateContract(apiKeys.receivedKeys[i]._id, CONTRACT_STATE_VERIFIED, profile.name);;
     myContracts.push(contract);
   }
 
@@ -46,31 +46,15 @@ export default function generateData() {
       const contract = generateContract(apiKeys.ownKeys[getRandom(apiKeys.ownKeys.length)]._id, getRandomFinishedContractState(), generateTraderName());
       finishedContracts.push(contract);
     } else {
-      const contract = generateContract(generateId(), getRandomFinishedContractState(), 'me');;
+      const contract = generateContract(generateId(), getRandomFinishedContractState(), profile.name);;
       finishedContracts.push(contract);
     }
   }
-  const orders = generateOrders();
-  const history = generateHistory();
-  const terminal = {selectedMarket: 'USDT-BTC', orders, history, selectedApiKey: apiKeys.ownKeys[0]};
-
-
-
-  //const outgoingOffer = generateOffer(apiKeys.ownKeys[1]._id, 'INIT', 'me', 'other');*/
-  //const incomingOffer = generateOffer(apiKeys.receivedKeys[0]._id, 'INIT', 'me', 'other');
-  //const myContract = generateContract(apiKeys.ownKeys[2]._id, 'in_progress', 'SOME_TRADER');
-  //const completedContract = generateContract(apiKeys.ownKeys[2]._id, 'FINISHED', 'OTHER_TRADER');
-  //const completed2 = generateContract(apiKeys.ownKeys[2]._id, 'FINISHED', 'OTHER_TRADER2');
-  //const completed3 = generateContract(apiKeys.ownKeys[2]._id, 'FINISHED', 'OTHER_TRADER3');
-  //const completed4 = generateContract(apiKeys.ownKeys[2]._id, 'FINISHED', 'OTHER_TRADER3');
-  //const failedContract = generateContract(apiKeys.ownKeys[2]._id, 'failed', 'BEST_TRADER');
-  //const receivedContract = generateContract(apiKeys.ownKeys[1]._id, 'in_progress', 'me');*/
   return {
     auth: {loggedIn: true, profile},
     apiKeys,
     offers: {incoming: incomingOffers, outgoing: outgoingOffers},
     contracts: {current: myActiveContracts.concat(myContracts), finished: finishedContracts},
-    terminal,
   };
 }
 

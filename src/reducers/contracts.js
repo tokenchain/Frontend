@@ -3,48 +3,31 @@ import { PAY_OFFER } from '../actions/offers';
 import { makeId } from '../generic/util';
 import { UPDATE_DASHBOARD } from '../actions/dashboard';
 import { CONTRACT_STATE_VERIFIED, CONTRACT_STATE_FINISHED, CONTRACT_STATE_HALTED } from '../constants';
+import { getUser } from '../demoData/ratings';
 
 export default function(state = {current: [], finished: []}, action) {
   switch(action.type) {
     case RATE_CONTRACT:
       const feedback = action.feedback;
-      const name = action.userId;
-      const date = (new Date(action.time)).toISOString();
-      const f = {
-        name,
-        date,
-        raiting: feedback.rate,
-        text: feedback.text,
-      };
       const contract = state.finished.find(c => c._id === feedback.offerId);
+      const user = getUser('my_profile');
+      const f = {
+        author: user._id,
+        authorName: 'my_profile',
+        dt: Date.now(),
+        text: feedback.text,
+        rate: feedback.rate,
+      };
       const updated = {...contract, feedbacks: contract.feedbacks.concat(f)};
       return {...state, finished: state.finished.map(c => c._id === updated._id ? updated : c)};
     case PAY_OFFER: {
       const offer = action.offer;
-      const _id = makeId();
-      const startDate = Date.now();
-      const expireDate = offer.duration * 86400000 + startDate;
-      const startBalance = offer.amount;
-      const currentBalance = offer.amount;
-      const contractor = offer.toUser[0].name;
-      const { currency, keyId, fee, maxLoss } = offer;
-      const left = Math.floor(startBalance * offer.roi / 100);
       const contract = {
-        contractor,
-        currency,
+        ...offer,
+        start: Math.floor(Date.now() / 1000),
         state: CONTRACT_STATE_VERIFIED,
-        expireDate,
-        startDate,
-        startBalance,
-        currentBalance,
-        left,
-        maxLoss,
-        fee,
-        feedbacks: [],
-        _id,
-        keyId,
+        targetBalance: (offer.roi + 100) / 100 * offer.startBalance,
       };
-      console.log(state);
       return {...state, current: state.current.concat(contract)};
     }
     case UPDATE_DASHBOARD: {

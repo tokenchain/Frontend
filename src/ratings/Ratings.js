@@ -272,7 +272,7 @@ const TraderRatingRow = (props) => (
       <span className="success">{props.successContracts || 0}</span>
     </td>
     <td>
-      <span>{0}</span>
+      <span>{props.roiInBTC && props.roiInBTC.toFixed(2)}</span>
     </td>
     <td>
       {props.availableForOffers ?

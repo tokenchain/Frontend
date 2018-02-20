@@ -1,7 +1,7 @@
 import { SELECT_API_KEY, CANCEL_ORDER, SELECT_MARKET,
   PLACE_ORDER, GET_MY_ORDERS, UPDATE_RATINGS, UPDATE_TICKER, UPDATE_ORDER_BOOK, UPDATE_HISTORY } from '../actions/terminal';
 import { ADD_API_KEY, DELETE_API_KEY } from '../actions/apiKeys';
-import { generateId } from '../demoData/util';
+import { getId } from '../generic/random';
 
 export default function(state = {
   selectedApiKey: null,
@@ -38,6 +38,8 @@ export default function(state = {
     case CANCEL_ORDER: {
       const id = action.order._id;
       const openOrders = state.orders.open.filter(o => o._id !== id);
+      const orders = {open: openOrders, completed: state.orders.completed};
+      window.localStorage.setItem(`orders${action.order.keyId}`, JSON.stringify(orders));
       return {...state, orders: {open: openOrders, completed: state.orders.completed}};
     }
     case SELECT_MARKET: {
@@ -49,9 +51,11 @@ export default function(state = {
     }
     case PLACE_ORDER: {
       const order = action.order;
-      order._id = generateId();
+      order._id = getId();
       const open = state.orders.open;
-      return {...state, orders: {completed: state.orders.completed, open: [order].concat(open)}}; 
+      const orders = {completed: state.orders.completed, open: [order].concat(open)};
+      window.localStorage.setItem(`orders${order.keyId}`, JSON.stringify(orders));
+      return {...state, orders };
     }
     case ADD_API_KEY:
       if(!state.selectedApiKey) {
@@ -75,7 +79,7 @@ export default function(state = {
       const ratings = action.ratings.filter(r => !!r.name);
       return {...state, ratings: ratings};
     case UPDATE_HISTORY:
-      return {...state, history: action.history};      
+      return {...state, history: action.history};
     default:
       return state;
   }

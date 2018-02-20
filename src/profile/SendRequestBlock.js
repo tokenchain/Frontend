@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { sendOffer } from '../actions/offers';
 import { clearRequest } from '../actions/request';
 import { Redirect } from 'react-router-dom';
+import { calculateKeyBalance } from '../generic/util';
 
 const SEND_REQUEST_BLOCK_DETAILS = 0;
 const SEND_REQUEST_BLOCK_SELECT_API = 1;
@@ -39,6 +40,7 @@ class SendRequestBlock extends React.Component {
       roi: this.props.profile.roi,
       toUser: [{name: this.props.profile.name, _id: this.props.profile._id}],
     };
+    offer.balance = calculateKeyBalance(this.state.selectedApiKey, this.props.profile.minAmountCurrency, this.props.rates);
     this.props.sendOffer(offer);
   }
 

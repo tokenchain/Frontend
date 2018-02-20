@@ -30,7 +30,7 @@ class TablesScreen extends React.Component {
                   <CurrencySettings
                     own={this.props.own}
                     onCurrencyToggle={this.props.onCurrencyToggle}
-                    currencies={this.props.currencies}
+                    currencies={this.props.profile.currencies}
                   />
                   <TradeHistory
                     trades={this.props.profile.trades || {asTrader: [], asInvestor:[]}}

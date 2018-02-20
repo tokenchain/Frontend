@@ -9,7 +9,12 @@ export default function(state = {}, action) {
       return action.profile;
     case UPDATE_PROFILE:
       const {availableForOffers, fee, minAmount, roi, minAmountCurrency, duration, maxLoss, currencies} = action.profile;
-      return {...state, availableForOffers, fee, minAmount, roi, minAmountCurrency, duration, maxLoss, currencies};
+      const newProfile = {...state, availableForOffers, fee, minAmount, roi, minAmountCurrency, duration, maxLoss, currencies};
+
+      const users = JSON.parse(window.localStorage.getItem('demoRatings'));
+      const updated = users.map(u => u.name === newProfile.name ? newProfile : u);
+      window.localStorage.setItem('demoRatings', JSON.stringify(updated));
+      return newProfile;
     case TRADES_FOR_USER: {
       if(action.name === state.name) {
         const {asInvestor, asTrader} = action.trades;

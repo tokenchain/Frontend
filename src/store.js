@@ -2,8 +2,9 @@ import { createStore, compose, applyMiddleware } from 'redux';
 import reducer from './rootReducer';
 import thunk from 'redux-thunk';
 import generateData from './demoData';
+import { getUser } from './demoData/ratings';
 
-const DEMO_VERSION = '1';
+const DEMO_VERSION = '8';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
@@ -31,11 +32,8 @@ function getReduxState() {
     return state;
   } else {
     localStorage.clear();
-    state = generateData();
-    state.selectedNet = selectedNet;
     localStorage.setItem('demoVersion', DEMO_VERSION);
-    saveState(state);
-    return state;
+    return undefined;
   }
 }
 

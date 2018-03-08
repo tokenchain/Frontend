@@ -11,6 +11,7 @@ import profile from './reducers/profile';
 import exchangesInfo from './reducers/exchangesInfo';
 import { combineReducers } from 'redux';
 import { calculateKeyBalance } from './generic/util';
+import generateData from './demoData';
 
 import { LOGGED_OUT } from './actions/auth';
 
@@ -25,7 +26,14 @@ const root = (state, action) => {
       return newState;
     }
   };
-  let newState = combined(state, action);
+  let newState;
+  if(action.rates && !state.rates) {
+    newState = generateData(action.rates);
+    newState.profile = state ? state.profile : {};
+    newState = combined(newState, action);
+  } else {
+    newState = combined(state, action);
+  }
   switch(action.type) {
     case 'UPDATE_EXCHANGE_RATES': {
       const rates = action.rates;

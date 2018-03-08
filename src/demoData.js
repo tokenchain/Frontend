@@ -11,31 +11,31 @@ import { CONTRACT_STATE_VERIFIED, CONTRACT_STATE_HALTED, CONTRACT_STATE_FINISHED
 
 
 
-export default function generateData() {
+export default function generateData(rates) {
   const profile = getUser('my_profile');
   const apiKeys = generateKeys(profile._id);
   const usedKeys = apiKeys.ownKeys.filter(k => k.state === KEY_STATE_USED);
 
   const outgoingOffers = [];
   for(let i = 0; i < usedKeys.length / 2; i++) {
-    const offer = generateOffer(usedKeys[i]._id, getRandomState(), profile.name, generateTraderName());
+    const offer = generateOffer(usedKeys[i], getRandomState(), profile.name, generateTraderName(), rates);
     outgoingOffers.push(offer);
   }
 
   const myActiveContracts = [];
   for(let i = Math.floor(usedKeys.length / 2); i < usedKeys.length; i++) {
-    const contract = generateContract(usedKeys[i]._id, CONTRACT_STATE_VERIFIED, generateTraderName());
+    const contract = generateContract(usedKeys[i], CONTRACT_STATE_VERIFIED, generateTraderName(), rates);
     myActiveContracts.push(contract);
   }
 
   const incomingOffers = [];
   for(let i = 0; i < apiKeys.receivedKeys.length / 2; i++) {
-    const offer = generateOffer(apiKeys.receivedKeys[i]._id, getRandomState(), generateTraderName(), profile.name);
+    const offer = generateOffer(apiKeys.receivedKeys[i], getRandomState(), generateTraderName(), profile.name, rates);
     incomingOffers.push(offer);
   }
   const myContracts = [];
   for(let i = apiKeys.receivedKeys.length / 2; i < apiKeys.receivedKeys.length; i++) {
-    const contract = generateContract(apiKeys.receivedKeys[i]._id, CONTRACT_STATE_VERIFIED, profile.name);;
+    const contract = generateContract(apiKeys.receivedKeys[i], CONTRACT_STATE_VERIFIED, profile.name, rates);;
     myContracts.push(contract);
   }
 
@@ -43,10 +43,10 @@ export default function generateData() {
 
   for(let i = 0; i < 20; i++) {
     if(getRandom(2)) {
-      const contract = generateContract(apiKeys.ownKeys[getRandom(apiKeys.ownKeys.length)]._id, getRandomFinishedContractState(), generateTraderName());
+      const contract = generateContract(apiKeys.ownKeys[getRandom(apiKeys.ownKeys.length)], getRandomFinishedContractState(), generateTraderName(), rates);
       finishedContracts.push(contract);
     } else {
-      const contract = generateContract(generateId(), getRandomFinishedContractState(), profile.name);;
+      const contract = generateContract(null, getRandomFinishedContractState(), profile.name, rates);;
       finishedContracts.push(contract);
     }
   }

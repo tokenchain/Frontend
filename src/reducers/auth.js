@@ -1,11 +1,11 @@
 import { LOGGED_IN, NAME_REQUIRED } from '../actions/auth';
 import { UPDATE_PROFILE, GET_PROFILE } from '../actions/profile';
-import { generateProfile } from '../demoData/profile';
+import { getUser } from '../demoData/ratings';
+
 
 
 const getInitState = () => {
-  const profile = generateProfile('myprofile');
-  window.localStorage.setItem('profile/' + profile.name, JSON.stringify(profile));
+  const profile = getUser('my_profile');
   return {
     loggedIn: true,
     profile,

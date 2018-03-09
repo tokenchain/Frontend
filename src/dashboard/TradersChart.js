@@ -72,6 +72,8 @@ class TradersChart extends React.Component {
   }
 
   render() {
+    if (!this.state.data.length) return null
+    
     return (
       <div className="table">
         <div className="table_title_wrapper clearfix">

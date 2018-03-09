@@ -7,32 +7,23 @@ import { Desktop, Mobile } from '../generic/MediaQuery';
 import { CONTRACT_STATE_FINISHED, CONTRACT_STATE_HALTED } from '../constants';
 
 const SelectedContractInfo = ({ contract, onContractRate, time, userId }) => {
-  if(!contract) {
-    let dateNow = Date.now();
-    let contractDefault = {}
-    return (
-      <Desktop>
-        <ContractInfoEmpty/>
-      </Desktop>
-      );
-  } else {
-    if(contract.state === CONTRACT_STATE_FINISHED || contract.state === CONTRACT_STATE_HALTED) {
-      if(canLeaveFeedback(contract, userId)) {
-        return (
-          <ContractFeedback
-            onContractRate={onContractRate}
-            contract={contract}
-          />
-        );
-      } else {
-        return (<ProfileFeedbacks
-          comments={contract.feedbacks}
+  if(!contract) return null
+  if(contract.state === CONTRACT_STATE_FINISHED || contract.state === CONTRACT_STATE_HALTED) {
+    if(canLeaveFeedback(contract, userId)) {
+      return (
+        <ContractFeedback
+          onContractRate={onContractRate}
+          contract={contract}
         />
-        );
-      }
+      );
     } else {
-      return (<ContractInfo time={time} contract={contract}/>);
+      return (<ProfileFeedbacks
+        comments={contract.feedbacks}
+      />
+      );
     }
+  } else {
+    return (<ContractInfo time={time} contract={contract}/>);
   }
 };
 

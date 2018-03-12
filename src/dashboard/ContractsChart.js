@@ -14,11 +14,11 @@ class ContractsChart extends React.Component {
   formatData(contracts) {
     const data = contracts.reduce((acc, c) => {
       acc[c.contractor] = acc[c.contractor] || 0;
-      acc[c.contractor] += c.currentBalance - c.startBalance
+      acc[c.contractor] += c.finishBalance - c.startBalance
       return acc;
     }, {});
     return Object.entries(data).filter(a => a[1] > 0)
-      .sort((a1, a2) => a1[1] < a2[1])
+      .sort((a1, a2) => a2[1] - a1[1])
       .map(a => ({
         category: a[0],
         'column-1': a[1]

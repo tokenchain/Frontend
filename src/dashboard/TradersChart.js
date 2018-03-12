@@ -13,9 +13,9 @@ class TradersChart extends React.Component {
   }
 
   formatData(contracts) {
-    return contracts.filter(c => c.state === 'FINISHED' && c.currentBalance - c.startBalance > 0)
-      .sort((c1, c2) => c1.currentBalance - c1.startBalance < c2.currentBalance - c2.startBalance)
-      .map(c => ({category: c.contractor, 'column-1': c.currentBalance - c.startBalance}));
+    return contracts.filter(c => c.state === 'FINISHED' && c.finishBalance - c.startBalance > 0)
+      .sort((c1, c2) => c2.finishBalance - c2.startBalance - (c1.finishBalance - c1.startBalance))
+      .map(c => ({category: c.contractor, 'column-1': c.finishBalance - c.startBalance}));
   }
 
   componentWillReceiveProps(nextProps) {

@@ -64,7 +64,7 @@ export default function(state = {
         return state;
       }
     case GET_MY_ORDERS: {
-      const {openTrades: open, closedTrades: completed} = action.orders;
+      const {open, completed} = action.orders;
       open.sort((o1, o2) => o2.dt - o1.dt);
       completed.sort((o1, o2) => o2.dt - o1.dt);
       return {...state, orders: {open, completed: completed.filter(o => o.filled > 0)}};

@@ -28,14 +28,16 @@ export function getMyOrders(key) {
       .then(res => {
         let orders;
         try {
-          const json = JSON.parse(window.localStorage.getItem(`orders${key._id}`));
-          if(!json) {
+          orders = JSON.parse(window.localStorage.getItem(`orders${key._id}`));
+          if(!orders) {
             throw new Error();
           };
         } catch(e) {
-          orders = {openTrades: [], closedTrades: []};
+          console.log(e);
+          orders = {open: [], completed: []};
           window.localStorage.setItem(`orders${key._id}`, JSON.stringify(orders));
         }
+        console.log(orders);
         dispatch({
           type: GET_MY_ORDERS,
           orders,
